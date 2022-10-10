@@ -17,7 +17,7 @@ type Logger struct {
 	app   string
 	data  Data
 	mutex sync.Mutex
-	out   io.Writer
+	Out   io.Writer
 }
 
 type Loggable interface {
@@ -35,8 +35,12 @@ func New(app string, logLevel Level) *Logger {
 	return &Logger{
 		level: logLevel,
 		app:   app,
-		out:   &stdOutWriter{},
+		Out:   &stdOutWriter{},
 	}
+}
+
+func (l *Logger) AppName() string {
+	return l.app
 }
 
 // Debug records detailed debug information about the data.
@@ -126,7 +130,7 @@ func (l *Logger) With(data ...Loggable) *Logger {
 		app:   l.app,
 		level: l.level,
 		data:  set,
-		out:   l.out,
+		Out:   l.Out,
 	}
 }
 
@@ -175,7 +179,7 @@ func (l *Logger) output(callDepth int, level Level, msg string) {
 		data = []byte("Logger unable to marshal log output to JSON: " + err.Error())
 	}
 
-	_, _ = l.out.Write(data)
+	_, _ = l.Out.Write(data)
 }
 
 type WriteLog struct {
